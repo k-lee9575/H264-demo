@@ -9,6 +9,9 @@
 #ifndef PCH_H
 #define PCH_H
 
-// TODO: 添加要在此处预编译的标头
-
+#include "stdio.h"
+#include <string>
+#include <iostream>
+#include <vector>
+using namespace std;
 #endif //PCH_H

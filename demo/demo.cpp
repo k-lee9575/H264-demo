@@ -2,11 +2,30 @@
 //
 
 #include "pch.h"
-#include <iostream>
+#include "stream.h"
+
+
+
+
+
+
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	vector<uint8_t> v_nalBytes;
+
+	CStreamFile *psfile = new CStreamFile("test.264");
+	bool state = true;
+	while (state)
+	{
+		state = psfile->read_nalunit(v_nalBytes);
+		for (auto it = v_nalBytes.begin(); it != v_nalBytes.end(); it++)
+		{
+			printf("%02x ", *it);
+		}
+		printf("\n");
+		
+	}
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
