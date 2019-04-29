@@ -5,25 +5,11 @@ class CStreamFile
 public:
 	CStreamFile(const string &strFilename);
 	~CStreamFile();
-
-	bool read_nalunit(vector<uint8_t> &v);
+	void parse_bitstream();
+	
 
 private:
-	enum FileError
-	{
-		OPEN_FILE_FAILED_ERROR,
-	};
-
-
-	enum read_nalunit_status
-	{
-		READ_NALUNIT_S0,
-		READ_NALUNIT_S1,
-		READ_NALUNIT_S2,
-		READ_NALUNIT_S3,
-		READ_NALUNIT_S4,
-	};
-
+	bool read_nalunit(vector<uint8_t> &v);//读取时已经将ebsp 转成sodb 无需再次转换
 	
 	bool automachine(read_nalunit_status &p, read_nalunit_status &n, uint8_t c, vector<uint8_t> &v);
 

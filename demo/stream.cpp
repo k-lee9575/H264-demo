@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "stream.h"
+#include "NALUnit.h"
+
+
 
 CStreamFile::CStreamFile(const string &strFilename)
 {
@@ -23,6 +26,29 @@ CStreamFile::~CStreamFile()
 	}
 }
 
+void CStreamFile::parse_bitstream()
+{
+	vector<uint8_t> v_nalBytes;
+	bool bRet;
+	do
+	{
+		bRet = read_nalunit(v_nalBytes);
+		if (v_nalBytes.size())
+		{
+			CNALUnit NalUnit(&v_nalBytes[0], v_nalBytes.size());
+			NalUnit.parse_nal_unit();
+		}
+	
+		//
+		//for (auto it = v_nalBytes.begin(); it != v_nalBytes.end(); it++)
+		//{
+		//	printf("%02x ", *it);
+		//}
+		//printf("\n");
+
+	} while (bRet);
+}
+
 void CStreamFile::fileInfo()
 {
 	cout << "Filenmae:" << m_strFilename << endl;
@@ -36,14 +62,12 @@ void CStreamFile::fileError(FileError e)
 bool CStreamFile::read_nalunit(vector<uint8_t> &v)
 {
 	v.clear();
-	bool state = true;
 	read_nalunit_status p = READ_NALUNIT_S0;
 	read_nalunit_status n = READ_NALUNIT_S0;
 	int c;
 	while ((c = fgetc(m_pInputFile)) != EOF)
 	{
-		state = automachine(p, n, c, v);
-		if (!state)
+		if (!automachine(p, n, c, v))
 		{
 			return true;
 		}
