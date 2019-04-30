@@ -40,6 +40,8 @@ void CNALUnit::parse_nal_unit()
 		Seq_Param_Set_Info();
 		break;
 	case PIC_PARAMETER_SET_RBSP:
+		Parse_as_pic_param_set();
+		Pic_Param_Set_Info();
 		break;
 	case ACCESS_UNIT_DELIMITER_RBSP:
 		break;
@@ -163,6 +165,34 @@ int CNALUnit::Parse_as_seq_param_set()
 	return 0;
 }
 
+int CNALUnit::Parse_as_pic_param_set()
+{
+	uint8_t bitPosition = 0;
+	uint32_t bytePosition = 0;
+	m_PPS_DATA.pic_parameter_set_id = Get_uev_code_num(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.seq_parameter_set_id = Get_uev_code_num(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.entropy_coding_mode_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.pic_order_present_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.num_slice_groups = Get_sev_code_num(m_pNalUnit, bytePosition, bitPosition) + 1;
+	if (m_PPS_DATA.num_slice_groups > 1)
+	{
+		return -1;
+	}
+
+	m_PPS_DATA.num_ref_idx_10_active = Get_uev_code_num(m_pNalUnit, bytePosition, bitPosition) + 1;
+	m_PPS_DATA.num_ref_idx_11_active = Get_uev_code_num(m_pNalUnit, bytePosition, bitPosition) + 1;
+	m_PPS_DATA.weighed_pred_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.weighted_bipred_idc = Get_uint_code_num(m_pNalUnit, bytePosition, bitPosition, 2);
+	m_PPS_DATA.pic_init_qp = Get_sev_code_num(m_pNalUnit, bytePosition, bitPosition) + 26;
+	m_PPS_DATA.pic_init_qs = Get_sev_code_num(m_pNalUnit, bytePosition, bitPosition) + 26;
+	m_PPS_DATA.chroma_qp_index_offset = Get_sev_code_num(m_pNalUnit, bytePosition, bitPosition);
+
+	m_PPS_DATA.deblocking_filter_control_present_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.constrained_intra_pred_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+	m_PPS_DATA.redundant_pic_cnt_present_flag = Get_bit_at_position(m_pNalUnit, bytePosition, bitPosition);
+
+}
+
 void CNALUnit::Seq_Param_Set_Info()
 {
 	cout << "==========Sequence Paramater Set==========" << endl;
@@ -215,6 +245,31 @@ void CNALUnit::Seq_Param_Set_Info()
 		cout << "frame_crop_bottum_offset: " << to_string(m_SPS_DATA.frame_crop_offset[3]) << endl;
 	}
 	cout << "vui_parameters_present_flag: " << to_string(m_SPS_DATA.vui_parameters_present_flag) << endl;
+	cout << "==========================================" << endl;
+	cout.flush();
+}
+
+void CNALUnit::Pic_Param_Set_Info()
+{
+	cout << "==========Picture Paramater Set==========" << endl;
+	cout << "pic_parameter_set_id: " << to_string(m_PPS_DATA.pic_parameter_set_id) << endl;
+	cout << "seq_parameter_set_id: " << to_string(m_PPS_DATA.seq_parameter_set_id) << endl;
+	cout << "entropy_coding_mode_flag: " << to_string(m_PPS_DATA.entropy_coding_mode_flag) << endl;
+	cout << "bottom_field_pic_order_in_frame_present_flag: " << to_string(m_PPS_DATA.pic_order_present_flag) << endl;
+	cout << "num_slice_groups: " << to_string(m_PPS_DATA.num_slice_groups) << endl;
+	if (m_PPS_DATA.num_slice_groups == 1)
+	{
+		cout << "num_ref_idx_l0_default_active: " << to_string(m_PPS_DATA.num_ref_idx_10_active) << endl;
+		cout << "num_ref_idx_l1_default_active: " << to_string(m_PPS_DATA.num_ref_idx_11_active) << endl;
+		cout << "weighted_pred_flag: " << to_string(m_PPS_DATA.weighed_pred_flag) << endl;
+		cout << "weighted_bipred_idc: " << to_string(m_PPS_DATA.weighted_bipred_idc) << endl;
+		cout << "pic_init_qp: " << to_string(m_PPS_DATA.pic_init_qp) << endl;
+		cout << "pic_init_qs: " << to_string(m_PPS_DATA.pic_init_qs) << endl;
+		cout << "chroma_qp_index_offset :" << to_string(m_PPS_DATA.chroma_qp_index_offset) << endl;
+		cout << "deblocking_filter_control_present_flag: " << to_string(m_PPS_DATA.deblocking_filter_control_present_flag) << endl;
+		cout << "constrained_intra_pred_flag: " << to_string(m_PPS_DATA.constrained_intra_pred_flag) << endl;
+		cout << "redundant_pic_cnt_present_flag: " << to_string(m_PPS_DATA.redundant_pic_cnt_present_flag) << endl;
+	}
 	cout << "==========================================" << endl;
 	cout.flush();
 }

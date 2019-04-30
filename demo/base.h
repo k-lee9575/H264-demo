@@ -121,3 +121,47 @@ typedef struct seq_parameter_set_data
 	~seq_parameter_set_data() {
 	};
 } SPS_DATA;
+
+
+typedef struct pic_parameter_set_data
+{
+	uint8_t pic_parameter_set_id;
+	uint8_t seq_parameter_set_id;
+	bool entropy_coding_mode_flag;
+	bool pic_order_present_flag;
+	uint8_t num_slice_groups;
+	uint8_t slice_group_map_type;
+
+	uint8_t num_ref_idx_10_active;
+	uint8_t num_ref_idx_11_active;
+	bool weighed_pred_flag;
+	uint8_t weighted_bipred_idc;
+	int pic_init_qp;
+	int pic_init_qs;
+	int chroma_qp_index_offset;
+	bool deblocking_filter_control_present_flag;
+	bool constrained_intra_pred_flag;
+	bool redundant_pic_cnt_present_flag;
+
+	pic_parameter_set_data() {
+		pic_parameter_set_id = 0;
+		seq_parameter_set_id = 0;
+		entropy_coding_mode_flag = false;
+		pic_order_present_flag = false;
+		num_slice_groups = 0;
+		slice_group_map_type = 0;
+
+		num_ref_idx_10_active = 0;
+		num_ref_idx_11_active = 0;
+		weighed_pred_flag = false;
+		weighted_bipred_idc = 0;
+		pic_init_qp = 0;
+		pic_init_qs = 0;
+		chroma_qp_index_offset = 0;
+		deblocking_filter_control_present_flag = false;
+		constrained_intra_pred_flag = false;
+		redundant_pic_cnt_present_flag = false;
+	}
+	~pic_parameter_set_data() {
+	}
+}PPS_DATA;
